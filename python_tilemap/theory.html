@@ -1,0 +1,186 @@
+
+
+<!DOCTYPE html>
+
+<head>
+    <title>通过经纬度计算不同模型图瓦片坐标</title>
+</head>
+
+<body>
+    <a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/zhulei2/p/15724801.html">
+        <span role="heading" aria-level="2">通过经纬度计算不同模型图瓦片坐标</span>
+    </a>
+
+<div class="clear"></div>
+<div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+    <p><span style="font-size: 18px">1，墨卡托投影</span></p>
+    <p><span
+            style="font-size: 16px">使用经纬度表示位置的大地坐标系虽然可以描述地球上点的位置，但是对于地图地理数据在二维平面内展示的场景，需要通过投影的方式将三维空间中的点映射到二维空间中。地图投影需要建立地球表面点与投影平面点的一一对应关系，在互联网地图中常使用墨卡托投影。墨卡托投影是荷兰地理学家墨卡托于1569年提出的一种地球投影方法，该方法是圆柱投影的一种。</span>
+    </p>
+    <p><span style="font-size: 16px">墨卡托投影如下：</span></p>
+    <p><span style="font-size: 16px"><img
+                src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211228160631896-1097028370.png"
+                alt="" loading="lazy" class="medium-zoom-image"></span></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p><span style="font-size: 18px">2，瓦片切割和瓦片坐标</span></p>
+    <p><span
+            style="font-size: 16px">对于经过墨卡托投影为平面的世界地图，在不同的地图分辨率(整个世界地图的像素大小)下，通过切割的方式将世界地图划分为地图单元，划分成的每一块地图单元称为地图瓦片。</span><br><span
+            style="font-size: 16px">地图瓦片具有以下特点：</span></p>
+    <p><span style="font-size: 16px">&nbsp;--具有唯一的瓦片等级（Level）和瓦片坐标编号（X, Y）。</span></p>
+    <p><span style="font-size: 16px">&nbsp;--瓦片分辨率为256*256。</span></p>
+    <p><span style="font-size: 16px">&nbsp;--最小的地图等级是0，此时世界地图只由一张瓦片组成。</span></p>
+    <p><span style="font-size: 16px">&nbsp;--瓦片等级越高，组成世界地图的瓦片数越多，可以展示的地图越详细。</span></p>
+    <p><span style="font-size: 16px">&nbsp;--某一瓦片等级地图的瓦片是由低一级的各瓦片切割成的4个瓦片组成，形成了瓦片金字塔。</span></p>
+    <p><span style="font-size: 16px"><img
+                src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211228161135191-630991111.png" alt=""
+                loading="lazy" class="medium-zoom-image"></span></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p><span style="font-size: 18px">3，高德地图瓦片坐标与坐标系定义</span></p>
+    <p><span style="font-size: 16px">高德地图瓦片坐标与Google Map、Open Street Map相同。高德地图的墨卡托投影截取了纬度（约85.05ºS,
+            约85.05ºN）之间部分的地球，使得投影后的平面地图水平方向和垂直方向长度相等。将墨卡托投影地图的左上角作为瓦片坐标系起点，往左方向为X轴，X轴与北纬85.05º重合且方向向左；往下方向为Y轴，Y轴与东经180º（亦为西经180º）重合且方向向下。瓦片坐标最小等级为0级，此时平面地图是一个像素为256*256的瓦片。在某一瓦片层级Level下，瓦片坐标的X轴和Y轴各有2^Level个瓦片编号，瓦片地图上的瓦片总数为2^Level*2^Level。</span>
+    </p>
+    <p><span style="font-size: 16px">高德地图Level=2的瓦片坐标编号情况：</span></p>
+    <p><span style="font-size: 16px"><img
+                src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211228161254963-1143972937.png"
+                alt="" loading="lazy" class="medium-zoom-image"></span></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p><span style="font-size: 18px">&nbsp;4，通过经纬度计算瓦片坐标</span></p>
+    <p>公式：（参考：<a href="https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames" target="_blank"
+            rel="noopener">Slippy
+            map tilenames</a>）</p>
+    <p>经纬度坐标（lon, lat）转瓦片坐标（x， y），z为瓦片层级:</p>
+    <p><img src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211228161420200-1477381510.png" alt=""
+            loading="lazy" class="medium-zoom-image"></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;java代码实现：</p>
+    <div class="cnblogs_code">
+        <div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);"
+                    onclick="copyCnblogsCode(this)" title="复制代码"><img src="//common.cnblogs.com/images/copycode.gif"
+                        alt="复制代码"></a></span></div>
+        <pre><span style="color: rgba(0, 128, 0, 1)">  /**</span><span style="color: rgba(0, 128, 0, 1)"> 功能描述: &lt;br&gt;
+* 〈高德地图，Google Map、Open Street Map 经纬度 转 瓦片坐标〉
+* @Param: [lon(经度), lat(维度), level(瓦片层级)]
+* </span><span style="color: rgba(128, 128, 128, 1)">@return</span><span style="color: rgba(0, 128, 0, 1)">: int[]
+* </span><span style="color: rgba(128, 128, 128, 1)">@author</span><span style="color: rgba(0, 128, 0, 1)">: zl
+* @date: 2021/12/23 14:18
+</span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">int</span>[] getTileNumber(<span style="color: rgba(0, 0, 255, 1)">double</span> lon, <span style="color: rgba(0, 0, 255, 1)">double</span> lat, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> level) {
+    </span><span style="color: rgba(0, 0, 255, 1)">int</span> xtile = (<span style="color: rgba(0, 0, 255, 1)">int</span>)Math.floor( (lon + 180) / 360 * (1&lt;&lt;<span style="color: rgba(0, 0, 0, 1)">level) ) ;
+
+  </span><span style="color: rgba(0, 0, 255, 1)">double</span> ln = Math.log( Math.tan(lat*Math.PI/180) + (1 / Math.cos(lat*Math.PI/180<span style="color: rgba(0, 0, 0, 1)">)) );
+  </span><span style="color: rgba(0, 0, 255, 1)">int</span> pow = (1&lt;&lt;(level-1<span style="color: rgba(0, 0, 0, 1)">));
+  </span><span style="color: rgba(0, 0, 255, 1)">int</span> ytile = (<span style="color: rgba(0, 0, 255, 1)">int</span>)Math.floor( (1 - ln/Math.PI) *<span style="color: rgba(0, 0, 0, 1)">pow );
+  </span><span style="color: rgba(0, 0, 255, 1)">if</span> (xtile &lt; 0<span style="color: rgba(0, 0, 0, 1)">) {
+      xtile</span>=0<span style="color: rgba(0, 0, 0, 1)">;
+  }
+  </span><span style="color: rgba(0, 0, 255, 1)">if</span> (xtile &gt;= (1&lt;&lt;<span style="color: rgba(0, 0, 0, 1)">level)) {
+      xtile</span>=((1&lt;&lt;level)-1<span style="color: rgba(0, 0, 0, 1)">);
+  }
+  </span><span style="color: rgba(0, 0, 255, 1)">if</span> (ytile &lt; 0<span style="color: rgba(0, 0, 0, 1)">) {
+      ytile</span>=0<span style="color: rgba(0, 0, 0, 1)">;
+  }
+  </span><span style="color: rgba(0, 0, 255, 1)">if</span> (ytile &gt;= (1&lt;&lt;<span style="color: rgba(0, 0, 0, 1)">level)) {
+      ytile</span>=((1&lt;&lt;level)-1<span style="color: rgba(0, 0, 0, 1)">);
+  }
+  </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">new</span> <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)">[]{xtile,ytile};
+}</span></pre>
+        <div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);"
+                    onclick="copyCnblogsCode(this)" title="复制代码"><img src="//common.cnblogs.com/images/copycode.gif"
+                        alt="复制代码"></a></span></div>
+    </div>
+    <p><span style="font-size: 18px">5，百度地图瓦片坐标与坐标系定义</span></p>
+    <p><span
+            style="font-size: 16px">百度地图的瓦片坐标系定义与高德地图并不相同，其墨卡托投影的参数也不同。百度地图瓦片坐标以墨卡托投影地图中赤道与0º经线相交位置为原点，沿着赤道往左方向为X轴，沿着0º经线向上方向为Y轴。</span><br><span
+            style="font-size: 16px">百度瓦片坐标定义了另一种二维坐标系，称为百度平面坐标系。百度平面坐标系的坐标原点与百度瓦片坐标原点相同，以瓦片等级18级为基准，规定18级时百度平面坐标的一个单位等于屏幕上的一个像素。平面坐标与地图所展示的级别没有关系，也就是说在1级和18级下，同一个经纬度坐标的百度平面坐标都是一致的。</span>
+    </p>
+    <p><span style="font-size: 16px">百度地图Level=2的瓦片坐标编号情况：</span></p>
+    <p><span style="font-size: 16px"><img
+                src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211228162001233-1500091125.png"
+                alt="" loading="lazy" class="medium-zoom-image"></span></p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;此时X方向和Y方向各有4个瓦片编号，但是外围的某些瓦片只有部分区域有地图或完全没有地图。没有地图的区域也可以认为其瓦片是无效的，即百度地图中X方向或Y方向的有效瓦片不一定达到2^{Level}个。<br>中国大概位于百度瓦片坐标的（0，0）中。
+    </p>
+    <p>百度经纬度坐标与百度平面坐标的相互转换，并没有公开的公式，需要通过百度地图的API实现。</p>
+    <p>参考链接（<a
+            href="https://blog.csdn.net/weixin_33758863/article/details/90098766?spm=1001.2101.3001.6650.7&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EOPENSEARCH%7Edefault-7.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EOPENSEARCH%7Edefault-7.no_search_link"
+            target="_blank" rel="noopener">这里</a>）</p>
+    <p>&nbsp;</p>
+    <p><span style="font-size: 18px">6，其他投影模型和坐标系定义（天地图）</span></p>
+    <p><span style="font-size: 16px">天地图的切片规则是这样的，l=1时，整幅地图（全球地图）被切为两片，如图（l=1）：</span></p>
+    <p><img src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211223185145530-714501659.png" alt=""
+            loading="lazy" class="medium-zoom-image"></p>
+    <p>&nbsp;</p>
+    <p>当l=2即以后，每个瓦片将被切位4片，如图（l=2）：</p>
+    <p>&nbsp;<img src="https://img2020.cnblogs.com/blog/1153934/202112/1153934-20211223185240703-1555343617.png"
+            alt="" loading="lazy" class="medium-zoom-image"></p>
+    <p>&nbsp;天地图经纬度计算瓦片坐标java实现：</p>
+    <div class="cnblogs_code">
+        <div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);"
+                    onclick="copyCnblogsCode(this)" title="复制代码"><img src="//common.cnblogs.com/images/copycode.gif"
+                        alt="复制代码"></a></span></div>
+        <pre><span style="color: rgba(0, 128, 0, 1)">/**</span><span style="color: rgba(0, 128, 0, 1)"> 功能描述: &lt;br&gt;
+    * 〈天地图 经纬度 转 瓦片坐标〉
+    * @Param: [rectPts(左上角经纬度rectPts[0],rectPts[1] 和 左下角经纬度rectPts[2],rectPts[3])也就是两个点, level(瓦片层级)]
+    * </span><span style="color: rgba(128, 128, 128, 1)">@return</span><span style="color: rgba(0, 128, 0, 1)">: double[]
+    * </span><span style="color: rgba(128, 128, 128, 1)">@author</span><span style="color: rgba(0, 128, 0, 1)">: zl
+    * @date: 2021/12/23 14:18
+    </span><span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">double</span>[] getTileNumber2(<span style="color: rgba(0, 0, 255, 1)">double</span>[] rectPts, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> level) {
+
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">瓦片的级别分辨率（1-18）</span>
+    <span style="color: rgba(0, 0, 255, 1)">double</span>[] resolution = {5.36441802978515E-06<span style="color: rgba(0, 0, 0, 1)">,
+            </span>1.07288360595703E-05<span style="color: rgba(0, 0, 0, 1)">,
+            </span>2.1457672119140625E-05<span style="color: rgba(0, 0, 0, 1)">,
+            </span>4.29153442382814E-05<span style="color: rgba(0, 0, 0, 1)">,
+            </span>8.58306884765629E-05<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.000171661376953125<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.00034332275390625<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.0006866455078125<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.001373291015625<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.00274658203125<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.0054931640625<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.010986328125<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.02197265625<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.0439453125<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.087890625<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.17578125<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.3515625<span style="color: rgba(0, 0, 0, 1)">,
+            </span>0.703125<span style="color: rgba(0, 0, 0, 1)">};
+
+
+    </span><span style="color: rgba(0, 0, 255, 1)">double</span> startX = Math.floor((rectPts[0] + 180.0) / (resolution[18 - level] * 256<span style="color: rgba(0, 0, 0, 1)">));
+    </span><span style="color: rgba(0, 0, 255, 1)">double</span> startY = Math.floor((90.0 - rectPts[1]) / (resolution[18 - level] * 256<span style="color: rgba(0, 0, 0, 1)">));
+    </span><span style="color: rgba(0, 0, 255, 1)">double</span> endX = Math.ceil((rectPts[2] + 180.0) / (resolution[18 - level] * 256<span style="color: rgba(0, 0, 0, 1)">));
+    </span><span style="color: rgba(0, 0, 255, 1)">double</span> endY = Math.ceil((90.0 - rectPts[3]) / (resolution[18 - level] * 256<span style="color: rgba(0, 0, 0, 1)">));
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">左上角瓦片坐标和左下角瓦片坐标</span>
+    <span style="color: rgba(0, 0, 255, 1)">double</span>[] result = <span style="color: rgba(0, 0, 255, 1)">new</span> <span style="color: rgba(0, 0, 255, 1)">double</span><span style="color: rgba(0, 0, 0, 1)">[]{startX, startY, endX, endY};
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> result;
+
+}</span></pre>
+        <div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);"
+                    onclick="copyCnblogsCode(this)" title="复制代码"><img src="//common.cnblogs.com/images/copycode.gif"
+                        alt="复制代码"></a></span></div>
+    </div>
+    <p>&nbsp;</p>
+    <p><span style="font-size: 18px">7:，注意</span></p>
+    <ul>
+        <li><span style="font-size: 16px">虽然最小的瓦片等级是0，但是部分地图并不提供0级或其他较小瓦片等级的地图，因为此时的世界地图将会很小，不能铺满用户设备窗口。</span></li>
+        <li>
+            <p><span
+                    style="font-size: 16px">墨卡托投影并不是一种坐标系，而是为了在二维平面上展示三维地球而进行的一种空间映射。所以在GIS地图和互联网地图中，虽然用户看到的地图经过了墨卡托投影，但依然使用经纬度坐标来表示地球上点的位置。在地图绘制和地图可视化时，就需要将地图数据使用投影的方式来呈现。</span>
+            </p>
+        </li>
+    </ul>
+    <p>&nbsp;</p>
+    <p><span style="font-size: 16px">8，参考链接</span></p>
+    <p><a href="https://www.cnblogs.com/mymhj/p/7416773.html" target="_blank" rel="noopener"><span
+                style="font-size: 16px">https://www.cnblogs.com/mymhj/p/7416773.html</span></a></p>
+    <p><a href="https://blog.csdn.net/yhj101096/article/details/118760410" target="_blank" rel="noopener"><span
+                style="font-size: 16px">https://blog.csdn.net/yhj101096/article/details/118760410</span></a></p>
+</div>
+</body>

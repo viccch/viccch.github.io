@@ -18,8 +18,8 @@ const map = new Map({
   layers: [
     new TileLayer({
       source: new XYZ({
-        // url:'http://t3.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=49ea1deec0ffd88ef13a3f69987e9a63'
-        url: 'http://localhost:3000/tilemap?z={z}&x={x}&y={y}'
+        url:'http://t3.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=49ea1deec0ffd88ef13a3f69987e9a63'
+        // url: 'http://localhost:3000/tilemap?z={z}&x={x}&y={y}'
       }),
     }),
   ],
