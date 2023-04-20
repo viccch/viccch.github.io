@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DPlayer demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js/dist/hls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
+</head>
+
+<body>
+    <div id="dplayer1"></div>
+    <script>
+        // import DPlayer from "dplayer";
+
+        initPlayers();
+
+        function initPlayers() {
+            window.dp1 = new DPlayer({
+                container: document.getElementById("dplayer1"),
+                preload: "none",
+                // screenshot: true,
+                video: {
+                    url: "https://api.dogecloud.com/player/get.mp4?vcode=5ac682e6f8231991&userId=17&ext=.mp4",
+                    pic: "https://i.loli.net/2019/06/06/5cf8c5d9c57b510947.png",
+                    thumbnails: "https://i.loli.net/2019/06/06/5cf8c5d9cec8510758.jpg",
+                },
+                subtitle: {
+                    url: [
+                        {
+                            url: "https://s-sh-17-dplayercdn.oss.dogecdn.com/hikarunara.vtt",
+                            lang: "zh-cn",
+                            name: "光",
+                        },
+                        {
+                            url: "https://gist.githubusercontent.com/samdutton/ca37f3adaf4e23679957b8083e061177/raw/e19399fbccbc069a2af4266e5120ae6bad62699a/sample.vtt",
+                            lang: "en-us",
+                            name: "github",
+                        },
+                    ],
+                    defaultSubtitle: 7,
+                    type: "webvtt",
+                    fontSize: "25px",
+                    bottom: "10%",
+                    color: "#b7daff",
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

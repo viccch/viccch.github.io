@@ -12,3 +12,7 @@ Hello 大家好
 - [Ticket12306余票查询与区间接续查询脚本](/ticketcnt12306/)
 - [高德地图瓦片获取与处理](/python_tilemap/)
 - [基于node.js的WMTS服务](/node_express_tilemap/)
+
+## playground
+
+<iframe src ="./playground.html" width="720" height="480"></iframe>
