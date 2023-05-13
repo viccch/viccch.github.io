@@ -1,8 +1,6 @@
-原文链接：https://blog.csdn.net/u012877472/article/details/50272771
+[BMP格式详解](https://blog.csdn.net/u012877472/article/details/50272771)
 
-
-
-https://blog.csdn.net/whl0071/article/details/126976920?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-9-126976920-blog-50272771.235^v31^pc_relevant_default_base3&spm=1001.2101.3001.4242.6&utm_relevant_index=12
+[BMP格式详解](https://blog.csdn.net/whl0071/article/details/126976920?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-9-126976920-blog-50272771.235^v31^pc_relevant_default_base3&spm=1001.2101.3001.4242.6&utm_relevant_index=12)
 
 
 ## BMP格式
